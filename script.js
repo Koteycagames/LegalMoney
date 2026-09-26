@@ -101,7 +101,6 @@ onAuthStateChanged(auth, async (user) => {
         listenUserBalance(user.uid);
         checkUserRejections(user.uid);
 
-        // Проверка приветственных модалок при входе
         await runWelcomeFlow(user.uid);
     } else {
         document.getElementById('auth-screen').classList.remove('hidden');
@@ -109,14 +108,12 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-// Логика последовательного показа модалок при входе
 async function runWelcomeFlow(uid) {
     const userRef = ref(db, `users/${uid}`);
     const snap = await get(userRef);
     const userData = snap.val() || {};
     const isFirstTime = !userData.hasLoggedInBefore;
 
-    // Показываем Модалку 1 (Соглашение) с таймером 5 сек
     const modal1 = document.getElementById('welcome-modal-1');
     const btn1 = document.getElementById('welcome-1-btn');
     modal1.classList.remove('hidden');
@@ -140,7 +137,6 @@ async function runWelcomeFlow(uid) {
 
     btn1.onclick = () => {
         modal1.classList.add('hidden');
-        // Экран загрузки на 1 секунду
         const loadingScreen = document.getElementById('loading-screen');
         loadingScreen.classList.remove('hidden');
 
@@ -156,7 +152,6 @@ function showWelcomeModal2(uid, isFirstTime) {
     const btn2 = document.getElementById('welcome-2-btn');
     modal2.classList.remove('hidden');
 
-    // 40 секунд при первом входе, 15 при последующих
     let timeLeft2 = isFirstTime ? 40 : 15;
     btn2.disabled = true;
     btn2.className = "w-full bg-gray-700 text-gray-400 font-bold py-3 rounded-xl transition cursor-not-allowed";
@@ -176,12 +171,10 @@ function showWelcomeModal2(uid, isFirstTime) {
 
     btn2.onclick = async () => {
         modal2.classList.add('hidden');
-        // Отмечаем, что пользователь уже заходил хотя бы раз
         await update(ref(db, `users/${uid}`), { hasLoggedInBefore: true });
     };
 }
 
-// Проверка отклоненных заявок при входе
 function checkUserRejections(uid) {
     const withdrawalsRef = ref(db, 'withdrawals');
     get(withdrawalsRef).then((snapshot) => {
@@ -190,7 +183,6 @@ function checkUserRejections(uid) {
                 const req = childSnap.val();
                 if (req.uid === uid && req.status === 'rejected' && !req.notified) {
                     showModal('Ваша заявка на вывод была отклонена администратором. Причина: обнаружено нарушение правил (старт в ботах не был зафиксирован или зафиксирована накрутка).', 'Заявка отклонена');
-                    // Помечаем как уведомленного, чтобы больше не показывалось
                     update(ref(db, `withdrawals/${childSnap.key}`), { notified: true });
                 }
             });
@@ -217,7 +209,6 @@ window.switchTab = function(tabName) {
     document.getElementById(`tab-${tabName}-btn`).classList.remove('border-transparent', 'text-gray-400');
 }
 
-// Переключение полей выбора способа вывода
 document.querySelectorAll('input[name="withdraw-method"]').forEach((elem) => {
     elem.addEventListener('change', (e) => {
         const cardContainer = document.getElementById('card-input-container');
@@ -226,7 +217,6 @@ document.querySelectorAll('input[name="withdraw-method"]').forEach((elem) => {
         } else {
             cardContainer.classList.add('hidden');
         }
-        // Изменение рамок радиокнопок
         document.querySelectorAll('input[name="withdraw-method"]').forEach(radio => {
             radio.closest('label').className = radio.checked 
                 ? "flex items-center justify-center p-3 bg-gray-800 border border-emerald-500 rounded-lg cursor-pointer text-sm font-semibold"
@@ -235,7 +225,6 @@ document.querySelectorAll('input[name="withdraw-method"]').forEach((elem) => {
     });
 });
 
-// Логика заданий
 const getTaskBtn = document.getElementById('get-task-btn');
 const stepStartContainer = document.getElementById('step-start-container');
 const stepVerifyContainer = document.getElementById('step-verify-container');
@@ -278,16 +267,22 @@ getTaskBtn.addEventListener('click', async () => {
         return;
     }
 
+    // Выбираем случайную ссылку
     currentSelectedLink = availableLinks[Math.floor(Math.random() * availableLinks.length)];
+
+    // СРАЗУ записываем ее в localStorage как посещенную, чтобы она больше никогда не выпала
+    visitedLinks.push(currentSelectedLink);
+    localStorage.setItem(visitedKey, JSON.stringify(visitedLinks));
+
     window.open(currentSelectedLink, '_blank');
 
     stepStartContainer.classList.add('hidden');
     stepVerifyContainer.classList.remove('hidden');
 
-    startVerificationTimer(currentUser.uid, visitedKey, lastClickKey);
+    startVerificationTimer(currentUser.uid, lastClickKey);
 });
 
-function startVerificationTimer(uid, visitedKey, lastClickKey) {
+function startVerificationTimer(uid, lastClickKey) {
     let timeLeft = 10;
     verifyTimer.innerText = timeLeft;
     confirmTaskBtn.disabled = true;
@@ -307,9 +302,6 @@ function startVerificationTimer(uid, visitedKey, lastClickKey) {
     }, 1000);
 
     confirmTaskBtn.onclick = async () => {
-        let visitedLinks = JSON.parse(localStorage.getItem(visitedKey) || '[]');
-        visitedLinks.push(currentSelectedLink);
-        localStorage.setItem(visitedKey, JSON.stringify(visitedLinks));
         localStorage.setItem(lastClickKey, Date.now().toString());
 
         const userBalanceRef = ref(db, `users/${uid}/balance`);
@@ -395,9 +387,7 @@ document.getElementById('add-link-btn').addEventListener('click', async () => {
     showModal('Ссылка успешно добавлена в общую базу!', 'Успешно');
 });
 
-// Админ-панель: загрузка и возможность удаления/модерации
 function loadAdminData() {
-    // Запросы ссылок
     onValue(ref(db, 'link_requests'), (snapshot) => {
         const container = document.getElementById('admin-link-requests');
         container.innerHTML = '';
@@ -426,7 +416,6 @@ function loadAdminData() {
         });
     });
 
-    // Запросы на вывод с кнопками Одобрить / Отклонить
     onValue(ref(db, 'withdrawals'), (snapshot) => {
         const container = document.getElementById('admin-withdrawals');
         container.innerHTML = '';
@@ -467,13 +456,11 @@ function loadAdminData() {
                 rejectBtn.className = "flex-1 bg-red-600 hover:bg-red-700 text-white py-1 rounded text-xs font-semibold";
                 rejectBtn.innerText = "Отклонить (Не тапал)";
                 rejectBtn.onclick = async () => {
-                    // Возвращаем деньги пользователю обратно на баланс при отклонении
                     const userBalRef = ref(db, `users/${req.uid}/balance`);
                     const balSnap = await get(userBalRef);
                     const currentBal = balSnap.val() || 0;
                     await set(userBalRef, currentBal + req.amount);
 
-                    // Меняем статус на rejected
                     await update(ref(db, `withdrawals/${key}`), { status: 'rejected', notified: false });
                 };
 
