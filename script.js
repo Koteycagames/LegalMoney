@@ -4,7 +4,7 @@ import {
     onAuthStateChanged, signOut 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
-    getDatabase, ref, set, get, update, push, child, onValue 
+    getDatabase, ref, set, get, update, push, remove, child, onValue 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -21,7 +21,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// Функция показа красивой модалки вместо alert
+// Функция показа обычной модалки
 function showModal(message, title = "Уведомление") {
     document.getElementById('modal-title').innerText = title;
     document.getElementById('modal-message').innerText = message;
@@ -67,7 +67,8 @@ authBtn.addEventListener('click', async () => {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             await set(ref(db, 'users/' + userCredential.user.uid), {
                 email: email,
-                balance: 0.00
+                balance: 0.00,
+                hasLoggedInBefore: false
             });
         } else {
             await signInWithEmailAndPassword(auth, email, password);
@@ -82,7 +83,8 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 });
 
 let currentUser = null;
-onAuthStateChanged(auth, (user) => {
+
+onAuthStateChanged(auth, async (user) => {
     currentUser = user;
     if (user) {
         document.getElementById('auth-screen').classList.add('hidden');
@@ -97,11 +99,104 @@ onAuthStateChanged(auth, (user) => {
         }
 
         listenUserBalance(user.uid);
+        checkUserRejections(user.uid);
+
+        // Проверка приветственных модалок при входе
+        await runWelcomeFlow(user.uid);
     } else {
         document.getElementById('auth-screen').classList.remove('hidden');
         document.getElementById('app-screen').classList.add('hidden');
     }
 });
+
+// Логика последовательного показа модалок при входе
+async function runWelcomeFlow(uid) {
+    const userRef = ref(db, `users/${uid}`);
+    const snap = await get(userRef);
+    const userData = snap.val() || {};
+    const isFirstTime = !userData.hasLoggedInBefore;
+
+    // Показываем Модалку 1 (Соглашение) с таймером 5 сек
+    const modal1 = document.getElementById('welcome-modal-1');
+    const btn1 = document.getElementById('welcome-1-btn');
+    modal1.classList.remove('hidden');
+
+    let timeLeft1 = 5;
+    btn1.disabled = true;
+    btn1.className = "w-full bg-gray-700 text-gray-400 font-semibold py-3 rounded-xl transition cursor-not-allowed";
+    btn1.innerText = `Подождите (${timeLeft1} сек)`;
+
+    const timer1 = setInterval(() => {
+        timeLeft1--;
+        if (timeLeft1 > 0) {
+            btn1.innerText = `Подождите (${timeLeft1} сек)`;
+        } else {
+            clearInterval(timer1);
+            btn1.disabled = false;
+            btn1.className = "w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 rounded-xl transition";
+            btn1.innerText = "ОК, согласен";
+        }
+    }, 1000);
+
+    btn1.onclick = () => {
+        modal1.classList.add('hidden');
+        // Экран загрузки на 1 секунду
+        const loadingScreen = document.getElementById('loading-screen');
+        loadingScreen.classList.remove('hidden');
+
+        setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+            showWelcomeModal2(uid, isFirstTime);
+        }, 1000);
+    };
+}
+
+function showWelcomeModal2(uid, isFirstTime) {
+    const modal2 = document.getElementById('welcome-modal-2');
+    const btn2 = document.getElementById('welcome-2-btn');
+    modal2.classList.remove('hidden');
+
+    // 40 секунд при первом входе, 15 при последующих
+    let timeLeft2 = isFirstTime ? 40 : 15;
+    btn2.disabled = true;
+    btn2.className = "w-full bg-gray-700 text-gray-400 font-bold py-3 rounded-xl transition cursor-not-allowed";
+    btn2.innerText = `Ознакомьтесь с правилами (${timeLeft2} сек)`;
+
+    const timer2 = setInterval(() => {
+        timeLeft2--;
+        if (timeLeft2 > 0) {
+            btn2.innerText = `Ознакомьтесь с правилами (${timeLeft2} сек)`;
+        } else {
+            clearInterval(timer2);
+            btn2.disabled = false;
+            btn2.className = "w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl transition shadow-lg";
+            btn2.innerText = "Я всё понял и подтверждаю честность";
+        }
+    }, 1000);
+
+    btn2.onclick = async () => {
+        modal2.classList.add('hidden');
+        // Отмечаем, что пользователь уже заходил хотя бы раз
+        await update(ref(db, `users/${uid}`), { hasLoggedInBefore: true });
+    };
+}
+
+// Проверка отклоненных заявок при входе
+function checkUserRejections(uid) {
+    const withdrawalsRef = ref(db, 'withdrawals');
+    get(withdrawalsRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnap) => {
+                const req = childSnap.val();
+                if (req.uid === uid && req.status === 'rejected' && !req.notified) {
+                    showModal('Ваша заявка на вывод была отклонена администратором. Причина: обнаружено нарушение правил (старт в ботах не был зафиксирован или зафиксирована накрутка).', 'Заявка отклонена');
+                    // Помечаем как уведомленного, чтобы больше не показывалось
+                    update(ref(db, `withdrawals/${childSnap.key}`), { notified: true });
+                }
+            });
+        }
+    });
+}
 
 function listenUserBalance(uid) {
     const balanceRef = ref(db, `users/${uid}/balance`);
@@ -122,7 +217,25 @@ window.switchTab = function(tabName) {
     document.getElementById(`tab-${tabName}-btn`).classList.remove('border-transparent', 'text-gray-400');
 }
 
-// Логика двухэтапного выполнения с таймером 10 секунд
+// Переключение полей выбора способа вывода
+document.querySelectorAll('input[name="withdraw-method"]').forEach((elem) => {
+    elem.addEventListener('change', (e) => {
+        const cardContainer = document.getElementById('card-input-container');
+        if (e.target.value === 'card') {
+            cardContainer.classList.remove('hidden');
+        } else {
+            cardContainer.classList.add('hidden');
+        }
+        // Изменение рамок радиокнопок
+        document.querySelectorAll('input[name="withdraw-method"]').forEach(radio => {
+            radio.closest('label').className = radio.checked 
+                ? "flex items-center justify-center p-3 bg-gray-800 border border-emerald-500 rounded-lg cursor-pointer text-sm font-semibold"
+                : "flex items-center justify-center p-3 bg-gray-800 border border-gray-700 rounded-lg cursor-pointer text-sm font-semibold";
+        });
+    });
+});
+
+// Логика заданий
 const getTaskBtn = document.getElementById('get-task-btn');
 const stepStartContainer = document.getElementById('step-start-container');
 const stepVerifyContainer = document.getElementById('step-verify-container');
@@ -135,7 +248,6 @@ let currentSelectedLink = '';
 getTaskBtn.addEventListener('click', async () => {
     if (!currentUser) return;
 
-    // Кулдаун 30 секунд между заданиями
     const lastClickKey = `last_click_${currentUser.uid}`;
     const lastClickTime = parseInt(localStorage.getItem(lastClickKey) || '0');
     const now = Date.now();
@@ -147,7 +259,6 @@ getTaskBtn.addEventListener('click', async () => {
         return;
     }
 
-    // Получаем ссылки из базы
     const linksSnap = await get(ref(db, 'links'));
     if (!linksSnap.exists()) {
         showNoLinks();
@@ -167,17 +278,12 @@ getTaskBtn.addEventListener('click', async () => {
         return;
     }
 
-    // Выбираем случайную ссылку
     currentSelectedLink = availableLinks[Math.floor(Math.random() * availableLinks.length)];
-
-    // Открываем бота в Telegram
     window.open(currentSelectedLink, '_blank');
 
-    // Переключаем интерфейс на экран проверки с таймером
     stepStartContainer.classList.add('hidden');
     stepVerifyContainer.classList.remove('hidden');
 
-    // Запускаем таймер проверки на 10 секунд
     startVerificationTimer(currentUser.uid, visitedKey, lastClickKey);
 });
 
@@ -235,10 +341,16 @@ document.getElementById('request-links-btn').addEventListener('click', async () 
 document.getElementById('withdraw-btn').addEventListener('click', async () => {
     if (!currentUser) return;
     const amount = parseFloat(document.getElementById('withdraw-amount').value);
+    const method = document.querySelector('input[name="withdraw-method"]:checked').value;
+    const cardNumber = document.getElementById('withdraw-card').value.trim();
     const termsAgreed = document.getElementById('terms-checkbox').checked;
 
     if (!amount || amount <= 0) {
         showModal('Введите корректную сумму для вывода!', 'Ошибка');
+        return;
+    }
+    if (method === 'card' && !cardNumber) {
+        showModal('Введите номер банковской карты!', 'Ошибка');
         return;
     }
     if (!termsAgreed) {
@@ -260,12 +372,15 @@ document.getElementById('withdraw-btn').addEventListener('click', async () => {
         email: currentUser.email,
         uid: currentUser.uid,
         amount: amount,
+        method: method,
+        cardNumber: method === 'card' ? cardNumber : 'Наличные',
         timestamp: Date.now(),
         status: 'pending'
     });
 
     showModal('Заявка на вывод успешно отправлена!', 'Успех');
     document.getElementById('withdraw-amount').value = '';
+    document.getElementById('withdraw-card').value = '';
     document.getElementById('terms-checkbox').checked = false;
 });
 
@@ -280,7 +395,9 @@ document.getElementById('add-link-btn').addEventListener('click', async () => {
     showModal('Ссылка успешно добавлена в общую базу!', 'Успешно');
 });
 
+// Админ-панель: загрузка и возможность удаления/модерации
 function loadAdminData() {
+    // Запросы ссылок
     onValue(ref(db, 'link_requests'), (snapshot) => {
         const container = document.getElementById('admin-link-requests');
         container.innerHTML = '';
@@ -290,11 +407,26 @@ function loadAdminData() {
         }
         snapshot.forEach((childSnap) => {
             const req = childSnap.val();
+            const key = childSnap.key;
             const date = new Date(req.timestamp).toLocaleString();
-            container.innerHTML += `<div class="bg-gray-700 p-2 rounded">${req.email} запросил ссылки (${date})</div>`;
+            
+            const div = document.createElement('div');
+            div.className = "bg-gray-700 p-2 rounded flex justify-between items-center";
+            div.innerHTML = `<span>${req.email} (${date})</span>`;
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = "bg-red-500/20 text-red-400 px-2 py-1 rounded hover:bg-red-500/30 text-xs";
+            deleteBtn.innerText = "Удалить";
+            deleteBtn.onclick = async () => {
+                await remove(ref(db, `link_requests/${key}`));
+            };
+            
+            div.appendChild(deleteBtn);
+            container.appendChild(div);
         });
     });
 
+    // Запросы на вывод с кнопками Одобрить / Отклонить
     onValue(ref(db, 'withdrawals'), (snapshot) => {
         const container = document.getElementById('admin-withdrawals');
         container.innerHTML = '';
@@ -304,8 +436,61 @@ function loadAdminData() {
         }
         snapshot.forEach((childSnap) => {
             const req = childSnap.val();
+            const key = childSnap.key;
             const date = new Date(req.timestamp).toLocaleString();
-            container.innerHTML += `<div class="bg-gray-700 p-2 rounded"><b>${req.amount} UAH</b> от ${req.email} (${date})</div>`;
+            
+            const div = document.createElement('div');
+            div.className = "bg-gray-700 p-3 rounded space-y-2";
+            
+            let statusBadge = '';
+            if (req.status === 'pending') statusBadge = '<span class="text-yellow-400">[Ожидает]</span>';
+            else if (req.status === 'approved') statusBadge = '<span class="text-emerald-400">[Одобрено]</span>';
+            else if (req.status === 'rejected') statusBadge = '<span class="text-red-400">[Отклонено]</span>';
+
+            div.innerHTML = `
+                <div><b>${req.amount} UAH</b> (${req.method === 'card' ? 'Карта: ' + req.cardNumber : 'Наличными'}) от ${req.email} ${statusBadge}</div>
+                <div class="text-gray-400 text-[10px]">${date}</div>
+            `;
+
+            if (req.status === 'pending') {
+                const btnContainer = document.createElement('div');
+                btnContainer.className = "flex space-x-2 mt-1";
+
+                const approveBtn = document.createElement('button');
+                approveBtn.className = "flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-1 rounded text-xs font-semibold";
+                approveBtn.innerText = "Одобрить";
+                approveBtn.onclick = async () => {
+                    await update(ref(db, `withdrawals/${key}`), { status: 'approved' });
+                };
+
+                const rejectBtn = document.createElement('button');
+                rejectBtn.className = "flex-1 bg-red-600 hover:bg-red-700 text-white py-1 rounded text-xs font-semibold";
+                rejectBtn.innerText = "Отклонить (Не тапал)";
+                rejectBtn.onclick = async () => {
+                    // Возвращаем деньги пользователю обратно на баланс при отклонении
+                    const userBalRef = ref(db, `users/${req.uid}/balance`);
+                    const balSnap = await get(userBalRef);
+                    const currentBal = balSnap.val() || 0;
+                    await set(userBalRef, currentBal + req.amount);
+
+                    // Меняем статус на rejected
+                    await update(ref(db, `withdrawals/${key}`), { status: 'rejected', notified: false });
+                };
+
+                btnContainer.appendChild(approveBtn);
+                btnContainer.appendChild(rejectBtn);
+                div.appendChild(btnContainer);
+            } else {
+                const removeBtn = document.createElement('button');
+                removeBtn.className = "w-full bg-gray-600 hover:bg-gray-500 text-white py-1 rounded text-xs mt-1";
+                removeBtn.innerText = "Удалить из истории";
+                removeBtn.onclick = async () => {
+                    await remove(ref(db, `withdrawals/${key}`));
+                };
+                div.appendChild(removeBtn);
+            }
+
+            container.appendChild(div);
         });
     });
 }
