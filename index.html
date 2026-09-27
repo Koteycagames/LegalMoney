@@ -1,111 +1,237 @@
-<!-- Вкладка: Задания -->
-<div id="tab-main" class="space-y-4">
-    <!-- Подвкладки категорий заданий -->
-    <div class="flex bg-gray-800 p-1 rounded-xl border border-gray-700 text-xs font-semibold">
-        <button onclick="switchTaskTab('bots')" id="subtab-bots-btn" class="flex-1 py-2 rounded-lg bg-emerald-600 text-white transition text-center">🤖 Боты и ТГ</button>
-        <button onclick="switchTaskTab('tiktok')" id="subtab-tiktok-btn" class="flex-1 py-2 rounded-lg text-gray-400 hover:text-white transition text-center">🎵 TikTok (10 грн)</button>
-        <button onclick="switchTaskTab('bugs')" id="subtab-bugs-btn" class="flex-1 py-2 rounded-lg text-gray-400 hover:text-white transition text-center">🛡️ Баг-хантер</button>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegalMoney — Зарабатывай легко</title>
+    <!-- Подключаем твой файл стилей -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Экран авторизации -->
+    <div id="auth-screen" class="app-container">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h1 id="auth-title" style="font-size: 22px; font-weight: bold; margin-bottom: 8px;">Вход в систему</h1>
+            <p style="font-size: 13px; color: #9ca3af;">Авторизуйтесь для доступа к заработку</p>
+        </div>
+        <div class="space-y">
+            <div>
+                <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Email</label>
+                <input type="email" id="email-input" placeholder="example@gmail.com">
+            </div>
+            <div>
+                <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Пароль</label>
+                <input type="password" id="password-input" placeholder="••••••••">
+            </div>
+            <button id="auth-btn" class="btn btn-emerald">Войти</button>
+            <button id="toggle-auth-mode" class="btn btn-gray" style="background: transparent; color: #10b981;">Нет аккаунта? Зарегистрироваться</button>
+        </div>
     </div>
 
-    <!-- Секция 1: Боты и ТГ -->
-    <div id="subtab-bots" class="space-y-4">
-        <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 space-y-4">
-            <div class="flex items-center justify-between">
-                <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full font-semibold">Награда: +1.00 UAH</span>
-                <span class="text-xs text-gray-400">Таймер: 10 сек</span>
+    <!-- Основной экран приложения -->
+    <div id="app-screen" class="app-container hidden">
+        <!-- Шапка -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #374151;">
+            <div>
+                <div style="font-size: 12px; color: #9ca3af;" id="user-email-display">user@gmail.com</div>
+                <div style="font-size: 20px; font-weight: 900; color: #10b981;" id="balance-display">0.00 UAH</div>
             </div>
-            <h3 class="text-lg font-bold text-white">Переход по реферальной ссылке</h3>
-            <p class="text-sm text-gray-300">Запустите бота по ссылке, выждите таймер и подтвердите выполнение.</p>
-            
-            <div id="step-start-container">
-                <button id="get-task-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-500/20 cursor-pointer">
-                    Получить задание
-                </button>
+            <button id="logout-btn" class="btn btn-gray" style="width: auto; padding: 8px 12px; font-size: 12px;">Выйти</button>
+        </div>
+
+        <!-- Навигация по главным вкладкам -->
+        <div class="tabs-header">
+            <button onclick="switchTab('main')" id="tab-main-btn" class="tab-btn active-emerald">Задания</button>
+            <button onclick="switchTab('withdraw')" id="tab-withdraw-btn" class="tab-btn">Вывод</button>
+            <button onclick="switchTab('admin')" id="tab-admin-btn" class="tab-btn hidden">Админка</button>
+        </div>
+
+        <!-- Вкладка: Задания -->
+        <div id="tab-main" class="space-y">
+            <!-- Подвкладки категорий заданий -->
+            <div style="display: flex; background-color: #111827; padding: 4px; border-radius: 12px; border: 1px solid #374151; font-size: 12px; font-weight: 600;">
+                <button onclick="switchTaskTab('bots')" id="subtab-bots-btn" class="tab-btn active-emerald" style="border-radius: 8px;">🤖 Боты и ТГ</button>
+                <button onclick="switchTaskTab('tiktok')" id="subtab-tiktok-btn" class="tab-btn" style="border-radius: 8px;">🎵 TikTok</button>
+                <button onclick="switchTaskTab('bugs')" id="subtab-bugs-btn" class="tab-btn" style="border-radius: 8px;">🛡️ Баг-хантер</button>
             </div>
 
-            <div id="step-verify-container" class="hidden space-y-3">
-                <div class="bg-gray-900 p-4 rounded-xl text-center space-y-2 border border-gray-700">
-                    <p class="text-sm text-gray-300">Перейдите по открывшейся ссылке и запустите бота.</p>
-                    <div class="text-2xl font-black text-emerald-400" id="verify-timer">10</div>
+            <!-- Секция 1: Боты и ТГ -->
+            <div id="subtab-bots" class="card space-y">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="badge badge-emerald">Награда: +1.00 UAH</span>
+                    <span style="font-size: 12px; color: #9ca3af;">Таймер: 10 сек</span>
                 </div>
-                <button id="confirm-task-btn" disabled class="w-full bg-gray-700 text-gray-400 font-bold py-3 rounded-xl transition cursor-not-allowed">
-                    Ожидание проверки...
-                </button>
+                <h3 style="font-size: 16px; font-weight: bold;">Переход по реферальной ссылке</h3>
+                <p style="font-size: 13px; color: #d1d5db;">Запустите бота по ссылке, выждите таймер и подтвердите выполнение.</p>
+                
+                <div id="step-start-container">
+                    <button id="get-task-btn" class="btn btn-emerald">Получить задание</button>
+                </div>
+
+                <div id="step-verify-container" class="hidden space-y">
+                    <div style="background-color: #111827; padding: 16px; border-radius: 12px; text-align: center; border: 1px solid #374151;">
+                        <p style="font-size: 13px; color: #d1d5db; margin-bottom: 8px;">Перейдите по открывшейся ссылке и запустите бота.</p>
+                        <div style="font-size: 24px; font-weight: 900; color: #10b981;" id="verify-timer">10</div>
+                    </div>
+                    <button id="confirm-task-btn" disabled class="btn btn-gray">Ожидание проверки...</button>
+                </div>
+
+                <div id="no-links-container" class="hidden space-y text-center" style="padding: 8px 0;">
+                    <p style="font-size: 13px; color: #fbbf24; font-weight: 600;">Все доступные ссылки на сегодня закончились!</p>
+                    <button id="request-links-btn" class="btn btn-gray">Запросить новые ссылки у админа</button>
+                </div>
             </div>
 
-            <div id="no-links-container" class="hidden space-y-3 text-center py-2">
-                <p class="text-sm text-amber-400 font-semibold">Все доступные ссылки на сегодня закончились!</p>
-                <button id="request-links-btn" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2.5 rounded-xl transition text-sm">
-                    Запросить новые ссылки у админа
-                </button>
+            <!-- Секция 2: TikTok задания -->
+            <div id="subtab-tiktok" class="card space-y hidden">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="badge badge-purple">Награда: 10.00 UAH</span>
+                    <span style="font-size: 12px; color: #9ca3af;">TikTok Спам-комменты</span>
+                </div>
+                <h3 style="font-size: 16px; font-weight: bold;">Написать 10 комментариев в TikTok</h3>
+                <p style="font-size: 13px; color: #d1d5db; line-height: 1.5;">
+                    1. Вбейте в поиск TikTok: <code style="background: #111827; padding: 2px 6px; border-radius: 4px; color: #10b981;">бесплатные деньги</code><br>
+                    2. Под 10 разными видео оставьте комментарий:<br>
+                    <span style="display: block; background: #111827; padding: 10px; border-radius: 8px; font-size: 11px; color: #e5e7eb; margin-top: 6px; border: 1px solid #374151; user-select: all;">
+                        Бля тут реально халява, редко где такое найти https://koteycagames.github.io/LegalMoney/
+                    </span>
+                    3. Сделайте скриншоты и скиньте их в наш Telegram чат.
+                </p>
+                <a href="https://t.me/+DwTJR8edtTZmNzgy" target="_blank" style="display: block; text-align: center; font-size: 12px; color: #10b981; text-decoration: underline; font-weight: 600;">
+                    🔗 Открыть группу для отправки скриншотов
+                </a>
+                <button onclick="openTikTokModal()" class="btn btn-purple">Взять задание TikTok</button>
+            </div>
+
+            <!-- Секция 3: Баг-хантеры -->
+            <div id="subtab-bugs" class="card space-y hidden">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="badge badge-blue">Награда: 5 – 10 UAH</span>
+                    <span style="font-size: 12px; color: #9ca3af;">Безопасность</span>
+                </div>
+                <h3 style="font-size: 16px; font-weight: bold;">Сообщить об ошибке или баге</h3>
+                <p style="font-size: 13px; color: #d1d5db;">Нашли баг? — <b style="color: #fff;">5 UAH</b>. Нашли уязвимость безопасности? — <b style="color: #fff;">10 UAH</b>.</p>
+                
+                <div class="space-y">
+                    <div>
+                        <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Тип находки:</label>
+                        <select id="bug-type">
+                            <option value="bug">Обычный баг (5 UAH)</option>
+                            <option value="security">Уязвимость безопасности (10 UAH)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Описание проблемы:</label>
+                        <textarea id="bug-desc" rows="3" placeholder="Подробно опишите, где баг и как его повторить..."></textarea>
+                    </div>
+                    <button id="send-bug-btn" class="btn btn-blue">Отправить отчет админу</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Секция 2: TikTok задания -->
-    <div id="subtab-tiktok" class="space-y-4 hidden">
-        <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 space-y-4">
-            <div class="flex items-center justify-between">
-                <span class="text-xs bg-purple-500/20 text-purple-400 px-2.5 py-1 rounded-full font-semibold">Награда: 10.00 UAH</span>
-                <span class="text-xs text-gray-400">TikTok Спам-комменты</span>
-            </div>
-            <h3 class="text-lg font-bold text-white">Написать 10 комментариев в TikTok</h3>
-            <p class="text-sm text-gray-300">
-                1. Вбейте в поиск TikTok: <code class="bg-gray-900 px-2 py-0.5 rounded text-emerald-400">бесплатные деньги</code><br>
-                2. Под 10 разными видео оставьте комментарий:<br>
-                <span class="block bg-gray-900 p-2.5 rounded-lg text-xs text-gray-200 mt-1 border border-gray-700 select-all">
-                    Бля тут реально халява, редко где такое найти https://koteycagames.github.io/LegalMoney/
-                </span>
-                3. Сделайте скриншоты и скиньте их в наш Telegram чат.
-            </p>
-            <a href="https://t.me/+DwTJR8edtTZmNzgy" target="_blank" class="block text-center text-xs text-emerald-400 underline font-semibold">
-                🔗 Открыть группу для отправки скриншотов
-            </a>
-            <button onclick="openTikTokModal()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-purple-600/20 cursor-pointer">
-                Взять задание TikTok
-            </button>
-        </div>
-    </div>
-
-    <!-- Секция 3: Баг-хантеры -->
-    <div id="subtab-bugs" class="space-y-4 hidden">
-        <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 space-y-4">
-            <div class="flex items-center justify-between">
-                <span class="text-xs bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full font-semibold">Награда: 5 – 10 UAH</span>
-                <span class="text-xs text-gray-400">Безопасность</span>
-            </div>
-            <h3 class="text-lg font-bold text-white">Сообщить об ошибке или баге</h3>
-            <p class="text-sm text-gray-300">Нашли баг? — <b class="text-white">5 UAH</b>. Нашли уязвимость безопасности? — <b class="text-white">10 UAH</b>.</p>
-            
-            <div class="space-y-3">
+        <!-- Вкладка: Вывод средств -->
+        <div id="tab-withdraw" class="card space-y hidden">
+            <h3 style="font-size: 16px; font-weight: bold;">Вывод средств</h3>
+            <div class="space-y">
                 <div>
-                    <label class="text-xs text-gray-400 block mb-1">Тип находки:</label>
-                    <select id="bug-type" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 text-white text-sm outline-none focus:border-emerald-500">
-                        <option value="bug">Обычный баг (5 UAH)</option>
-                        <option value="security">Уязвимость безопасности (10 UAH)</option>
-                    </select>
+                    <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Сумма (UAH)</label>
+                    <input type="number" id="withdraw-amount" placeholder="0.00">
                 </div>
                 <div>
-                    <label class="text-xs text-gray-400 block mb-1">Описание проблемы:</label>
-                    <textarea id="bug-desc" rows="3" placeholder="Подробно опишите, где баг и как его повторить..." class="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 text-white text-sm outline-none focus:border-emerald-500"></textarea>
+                    <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Способ выплаты</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <label style="display: flex; align-items: center; justify-content: center; padding: 10px; background-color: #111827; border: 1px solid #10b981; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                            <input type="radio" name="withdraw-method" value="card" checked style="display: none;"> На карту
+                        </label>
+                        <label style="display: flex; align-items: center; justify-content: center; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                            <input type="radio" name="withdraw-method" value="cash" style="display: none;"> Наличные
+                        </label>
+                    </div>
                 </div>
-                <button id="send-bug-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition cursor-pointer">
-                    Отправить отчет админу
-                </button>
+                <div id="card-input-container">
+                    <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Номер карты</label>
+                    <input type="text" id="withdraw-card" placeholder="5375 0000 0000 0000">
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="terms-checkbox" style="width: auto;">
+                    <label for="terms-checkbox" style="font-size: 12px; color: #9ca3af;">Я согласен с условиями выплат</label>
+                </div>
+                <button id="withdraw-btn" class="btn btn-emerald">Заказать выплату</button>
+            </div>
+        </div>
+
+        <!-- Вкладка: Админка -->
+        <div id="tab-admin" class="card space-y hidden">
+            <h3 style="font-size: 16px; font-weight: bold; color: #ef4444;">Панель администратора</h3>
+            <div class="space-y">
+                <div>
+                    <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Добавить ссылку на бота</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="new-link-input" placeholder="https://t.me/...">
+                        <button id="add-link-btn" class="btn btn-emerald" style="width: auto; padding: 0 16px;">Добавить</button>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Запросы на новые ссылки:</h4>
+                    <div id="admin-link-requests" class="space-y" style="max-height: 150px; overflow-y: auto;"></div>
+                </div>
+                <div>
+                    <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Заявки на вывод:</h4>
+                    <div id="admin-withdrawals" class="space-y" style="max-height: 200px; overflow-y: auto;"></div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Модалка для ввода Telegram @username при выполнении TikTok задания -->
-<div id="tiktok-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-    <div class="bg-gray-800 border border-gray-700 rounded-2xl max-w-sm w-full p-6 space-y-4">
-        <h3 class="text-lg font-bold text-white" id="tiktok-modal-title">Введите ваш Telegram @username</h3>
-        <p class="text-xs text-gray-400">Чтобы администратор понял, от кого именно пришли скриншоты в группе, укажите ваш ник:</p>
-        <input type="text" id="tiktok-username-input" placeholder="@your_username" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 text-white text-sm outline-none focus:border-purple-500">
-        <div class="flex space-x-2">
-            <button onclick="closeTikTokModal()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2.5 rounded-xl text-sm font-semibold">Отмена</button>
-            <button onclick="submitTikTokTask()" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-xl text-sm font-semibold">Готово, иду кидать скрины</button>
+    <!-- Модальное окно TikTok с вводом @username -->
+    <div id="tiktok-modal" class="modal-backdrop hidden">
+        <div class="modal-box space-y">
+            <h3 style="font-size: 18px; font-weight: bold;">Введите ваш Telegram @username</h3>
+            <p style="font-size: 12px; color: #9ca3af;">Чтобы администратор понял, от кого именно пришли скриншоты в группе, укажите ваш ник:</p>
+            <input type="text" id="tiktok-username-input" placeholder="@your_username">
+            <div style="display: flex; gap: 8px;">
+                <button onclick="closeTikTokModal()" class="btn btn-gray">Отмена</button>
+                <button onclick="submitTikTokTask()" class="btn btn-purple">Готово, иду кидать</button>
+            </div>
         </div>
     </div>
-</div>
+
+    <!-- Универсальная модалка -->
+    <div id="custom-modal" class="modal-backdrop hidden">
+        <div class="modal-box space-y text-center">
+            <h3 id="modal-title" style="font-size: 18px; font-weight: bold;">Уведомление</h3>
+            <p id="modal-message" style="font-size: 13px; color: #d1d5db;"></p>
+            <button id="modal-close-btn" class="btn btn-emerald">ОК</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно приветствия 1 -->
+    <div id="welcome-modal-1" class="modal-backdrop hidden">
+        <div class="modal-box space-y text-center">
+            <h3 style="font-size: 18px; font-weight: bold;">Добро пожаловать!</h3>
+            <p style="font-size: 13px; color: #d1d5db;">Ознакомьтесь с правилами честной работы нашего сервиса перед началом.</p>
+            <button id="welcome-1-btn" class="btn btn-emerald" disabled>Подождите (5 сек)</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно приветствия 2 -->
+    <div id="welcome-modal-2" class="modal-backdrop hidden">
+        <div class="modal-box space-y text-center">
+            <h3 style="font-size: 18px; font-weight: bold;">Важное правило</h3>
+            <p style="font-size: 13px; color: #d1d5db;">Запрещено создавать мультиаккаунты и накручивать задания ботами. Нарушители банятся без выплат.</p>
+            <button id="welcome-2-btn" class="btn btn-emerald" disabled>Ознакомьтесь с правилами (40 сек)</button>
+        </div>
+    </div>
+
+    <!-- Экран загрузки -->
+    <div id="loading-screen" class="modal-backdrop hidden">
+        <div class="modal-box text-center">
+            <p style="font-size: 15px; font-weight: bold; color: #10b981;">Загрузка профиля...</p>
+        </div>
+    </div>
+
+    <!-- Подключаем логику скрипта -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
