@@ -48,14 +48,29 @@
 
         <!-- Вкладка: Задания -->
         <div id="tab-main" class="space-y">
-            <!-- Подвкладки (только TikTok и Баг-хантер) -->
-            <div style="display: flex; background-color: #0b0f19; padding: 4px; border-radius: 14px; border: 1px solid #1f2937;">
-                <button onclick="switchTaskTab('tiktok')" id="subtab-tiktok-btn" class="tab-btn active">🎵 TikTok</button>
-                <button onclick="switchTaskTab('bugs')" id="subtab-bugs-btn" class="tab-btn">🛡️ Баг-хантер</button>
+            <!-- Подвкладки категорий заданий -->
+            <div class="tabs-header" style="margin-bottom: 16px;">
+                <button onclick="switchTaskTab('channels')" id="subtab-channels-btn" class="tab-btn active">📢 Подписки</button>
+                <button onclick="switchTaskTab('tiktok')" id="subtab-tiktok-btn" class="tab-btn">🎵 TikTok</button>
+                <button onclick="switchTaskTab('bugs')" id="subtab-bugs-btn" class="tab-btn">🛡️ Баги</button>
             </div>
 
-            <!-- Секция: TikTok задания -->
-            <div id="subtab-tiktok" class="card space-y">
+            <!-- Секция 1: Подписки на каналы -->
+            <div id="subtab-channels" class="card space-y">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="badge badge-emerald">Награда: +1.50 UAH</span>
+                    <span style="font-size: 12px; color: #9ca3af;">Telegram</span>
+                </div>
+                <h3 style="font-size: 17px; font-weight: bold; color: #fff;">Подписка на Telegram-канал</h3>
+                <p style="font-size: 13px; color: #d1d5db; line-height: 1.5;">
+                    Подпишитесь на спонсорский канал и получите награду на баланс.
+                </p>
+                <a href="#" target="_blank" id="channel-link-btn" class="btn btn-emerald" style="display: block; text-decoration: none; line-height: normal;">Перейти к каналу</a>
+                <button id="verify-channel-btn" class="btn btn-gray">Проверить подписку</button>
+            </div>
+
+            <!-- Секция 2: TikTok задания -->
+            <div id="subtab-tiktok" class="card space-y hidden">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <span class="badge badge-purple">Награда: 10.00 UAH</span>
                     <span style="font-size: 12px; color: #9ca3af;">Спам-комменты</span>
@@ -75,7 +90,7 @@
                 <button onclick="openTikTokModal()" class="btn btn-purple">Взять задание TikTok</button>
             </div>
 
-            <!-- Секция: Баг-хантеры -->
+            <!-- Секция 3: Баг-хантеры -->
             <div id="subtab-bugs" class="card space-y hidden">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <span class="badge badge-blue">Награда: 5 – 10 UAH</span>
@@ -144,7 +159,7 @@
         </div>
     </div>
 
-    <!-- Модальное окно TikTok с вводом @username -->
+    <!-- Модальное окно TikTok -->
     <div id="tiktok-modal" class="modal-backdrop hidden">
         <div class="modal-box space-y">
             <h3 style="font-size: 18px; font-weight: bold; color: #fff;">Введите ваш Telegram @username</h3>
