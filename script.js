@@ -199,30 +199,40 @@ function listenUserBalance(uid) {
 }
 
 // Переключение основных вкладок сайта
+// Переключение главных вкладок (Задания, Вывод, Админка)
 window.switchTab = function(tabName) {
-    ['main', 'withdraw', 'admin'].forEach(t => {
-        document.getElementById(`tab-${t}`).classList.add('hidden');
-        document.getElementById(`tab-${t}-btn`).classList.remove('border-emerald-500', 'font-semibold');
-        document.getElementById(`tab-${t}-btn`).classList.add('border-transparent', 'text-gray-400');
-    });
-    document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-    document.getElementById(`tab-${tabName}-btn`).classList.add('border-emerald-500', 'font-semibold');
-    document.getElementById(`tab-${tabName}-btn`).classList.remove('border-transparent', 'text-gray-400');
+    // Скрываем все основные вкладки
+    document.getElementById('tab-main').classList.add('hidden');
+    document.getElementById('tab-withdraw').classList.add('hidden');
+    document.getElementById('tab-admin').classList.add('hidden');
+
+    // Показываем нужную
+    document.getElementById('tab-' + tabName).classList.remove('hidden');
+
+    // Убираем класс active у всех кнопок главного меню и ставим на нажатую
+    document.getElementById('tab-main-btn').classList.remove('active');
+    document.getElementById('tab-withdraw-btn').classList.remove('active');
+    document.getElementById('tab-admin-btn').classList.remove('active');
+
+    document.getElementById('tab-' + tabName + '-btn').classList.add('active');
 }
 
-// Переключение подвкладок заданий на главной
-window.switchTaskTab = function(subTab) {
-    ['bots', 'tiktok', 'bugs'].forEach(t => {
-        document.getElementById(`subtab-${t}`).classList.add('hidden');
-        document.getElementById(`subtab-${t}-btn`).className = "flex-1 py-2 rounded-lg text-gray-400 hover:text-white transition text-center";
-    });
-    document.getElementById(`subtab-${subTab}`).classList.remove('hidden');
-    
-    let activeColor = "bg-emerald-600 text-white";
-    if (subTab === 'tiktok') activeColor = "bg-purple-600 text-white";
-    if (subTab === 'bugs') activeColor = "bg-blue-600 text-white";
+// Переключение подвкладок в Заданиях (Каналы, TikTok, Баги)
+window.switchTaskTab = function(subTabName) {
+    // Скрываем все секции подвкладок
+    document.getElementById('subtab-channels').classList.add('hidden');
+    document.getElementById('subtab-tiktok').classList.add('hidden');
+    document.getElementById('subtab-bugs').classList.add('hidden');
 
-    document.getElementById(`subtab-${subTab}-btn`).className = `flex-1 py-2 rounded-lg ${activeColor} transition text-center`;
+    // Показываем нужную
+    document.getElementById('subtab-' + subTabName).classList.remove('hidden');
+
+    // Убираем класс active у кнопок подвкладок и ставим на нажатую
+    document.getElementById('subtab-channels-btn').classList.remove('active');
+    document.getElementById('subtab-tiktok-btn').classList.remove('active');
+    document.getElementById('subtab-bugs-btn').classList.remove('active');
+
+    document.getElementById('subtab-' + subTabName + '-btn').classList.add('active');
 }
 
 // Логика модалки TikTok
