@@ -1,201 +1,111 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Легальный заработок</title>
-    <!-- Tailwind CSS для красивого интерфейса -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col justify-between">
-
-    <!-- Стандартное модальное окно уведомлений -->
-    <div id="custom-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-        <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 max-w-sm w-full shadow-2xl text-center">
-            <h3 id="modal-title" class="text-lg font-bold mb-2 text-emerald-400">Уведомление</h3>
-            <p id="modal-message" class="text-sm text-gray-300 mb-6"></p>
-            <button id="modal-close-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 font-semibold py-2.5 rounded-xl transition">ОК</button>
-        </div>
+<!-- Вкладка: Задания -->
+<div id="tab-main" class="space-y-4">
+    <!-- Подвкладки категорий заданий -->
+    <div class="flex bg-gray-800 p-1 rounded-xl border border-gray-700 text-xs font-semibold">
+        <button onclick="switchTaskTab('bots')" id="subtab-bots-btn" class="flex-1 py-2 rounded-lg bg-emerald-600 text-white transition text-center">🤖 Боты и ТГ</button>
+        <button onclick="switchTaskTab('tiktok')" id="subtab-tiktok-btn" class="flex-1 py-2 rounded-lg text-gray-400 hover:text-white transition text-center">🎵 TikTok (10 грн)</button>
+        <button onclick="switchTaskTab('bugs')" id="subtab-bugs-btn" class="flex-1 py-2 rounded-lg text-gray-400 hover:text-white transition text-center">🛡️ Баг-хантер</button>
     </div>
 
-    <!-- Модалка 1: Пользовательское соглашение (5 секунд) -->
-    <div id="welcome-modal-1" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-        <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 max-w-md w-full shadow-2xl text-center">
-            <h3 class="text-xl font-bold mb-3 text-emerald-400">Пользовательское соглашение</h3>
-            <p class="text-sm text-gray-300 mb-6 leading-relaxed">
-                Прежде чем получать деньги на нашей платформе, пожалуйста, внимательно ознакомьтесь с правилами пользовательского соглашения, политикой конфиденциальности и регламентом выплат.
-            </p>
-            <button id="welcome-1-btn" disabled class="w-full bg-gray-700 text-gray-400 font-semibold py-3 rounded-xl transition cursor-not-allowed">
-                Подождите (5 сек)
-            </button>
-        </div>
-    </div>
-
-    <!-- Экран загрузки (1 секунда) -->
-    <div id="loading-screen" class="hidden fixed inset-0 bg-gray-900 flex flex-col items-center justify-center z-50">
-        <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p class="text-sm text-gray-400">Загрузка системы...</p>
-    </div>
-
-    <!-- Модалка 2: Правила честности (40 сек при первом входе, 15 сек при последующих) -->
-    <div id="welcome-modal-2" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-        <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 max-w-lg w-full shadow-2xl text-left max-h-[85vh] overflow-y-auto">
-            <h3 class="text-xl font-bold mb-3 text-yellow-400 text-center">Важные правила платформы</h3>
-            <div class="text-xs text-gray-300 space-y-3 mb-6 leading-relaxed">
-                <p>• <b>Будьте предельно честны:</b> всегда нажимайте кнопку «Старт» / «Запустить» в открывающихся ботах Telegram и не закрывайте их мгновенно.</p>
-                <p>• <b>Откуда берутся деньги:</b> разработчик создает эту платформу и выплачивает честно заработанные средства благодаря активности пользователей и партнерским программам.</p>
-                <p>• <b>Система безопасности:</b> знайте, что даже если вы попытаетесь проигнорировать правила и закроете бота сразу, наша встроенная антифрод-защита при обработке заявок на вывод точно узнает, реально ли вы тыкали старт или просто накручивали клики.</p>
-                <p>• <b>Последствия нарушений:</b> при обнаружении попыток обмана или накрутки баланса заявки на вывод отклоняются администратором, а аккаунты могут быть заблокированы без возможности восстановления средств.</p>
-                <p>• Пожалуйста, уважайте чужой труд, выполняйте задания честно и зарабатывайте без рисков!</p>
+    <!-- Секция 1: Боты и ТГ -->
+    <div id="subtab-bots" class="space-y-4">
+        <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between">
+                <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full font-semibold">Награда: +1.00 UAH</span>
+                <span class="text-xs text-gray-400">Таймер: 10 сек</span>
             </div>
-            <button id="welcome-2-btn" disabled class="w-full bg-gray-700 text-gray-400 font-bold py-3 rounded-xl transition cursor-not-allowed">
-                Ознакомьтесь с правилами (40 сек)
-            </button>
-        </div>
-    </div>
-
-    <!-- Экран авторизации / регистрации -->
-    <div id="auth-screen" class="flex items-center justify-center flex-grow p-4">
-        <div class="bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-md">
-            <h2 id="auth-title" class="text-2xl font-bold mb-6 text-center text-emerald-400">Вход в систему</h2>
+            <h3 class="text-lg font-bold text-white">Переход по реферальной ссылке</h3>
+            <p class="text-sm text-gray-300">Запустите бота по ссылке, выждите таймер и подтвердите выполнение.</p>
             
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-2">Email или логин</label>
-                <input type="text" id="email-input" placeholder="Введите почту или логин" 
-                    class="w-full px-4 py-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                <p class="text-xs text-gray-400 mt-1">Если написать без @, домен @gmail.com подставится автоматически.</p>
-            </div>
-
-            <div class="mb-6">
-                <label class="block text-sm font-medium mb-2">Пароль</label>
-                <input type="password" id="password-input" placeholder="••••••••" 
-                    class="w-full px-4 py-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            </div>
-
-            <button id="auth-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 font-semibold py-3 rounded-lg transition duration-200 mb-4">
-                Войти
-            </button>
-
-            <p class="text-center text-sm text-gray-400 cursor-pointer" id="toggle-auth-mode">
-                Нет аккаунта? Зарегистрироваться
-            </p>
-        </div>
-    </div>
-
-    <!-- Основной интерфейс приложения -->
-    <div id="app-screen" class="hidden flex flex-col flex-grow justify-between max-w-md mx-auto w-full p-4">
-        <!-- Шапка -->
-        <header class="flex justify-between items-center py-4 border-b border-gray-800">
-            <span id="user-email-display" class="text-sm text-gray-400 truncate max-w-[200px]"></span>
-            <button id="logout-btn" class="text-xs bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg hover:bg-red-500/30">Выйти</button>
-        </header>
-
-        <!-- Навигация по вкладкам -->
-        <div class="flex border-b border-gray-800 my-4">
-            <button onclick="switchTab('main')" id="tab-main-btn" class="flex-1 py-2 text-center border-b-2 border-emerald-500 font-semibold">Главная</button>
-            <button onclick="switchTab('withdraw')" id="tab-withdraw-btn" class="flex-1 py-2 text-center border-b-2 border-transparent text-gray-400">Вывести</button>
-            <button onclick="switchTab('admin')" id="tab-admin-btn" class="flex-1 py-2 text-center border-b-2 border-transparent text-gray-400 hidden">Админка</button>
-        </div>
-
-        <!-- Вкладка: Главная -->
-        <div id="tab-main" class="flex flex-col items-center justify-center flex-grow py-8">
-            <div class="text-gray-400 text-sm mb-1">Ваш баланс</div>
-            <div id="balance-display" class="text-5xl font-extrabold text-emerald-400 mb-8">0.00 UAH</div>
-
-            <!-- Шаг 1: Кнопка получения задания -->
-            <div id="step-start-container" class="w-full flex flex-col items-center">
-                <button id="get-task-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-lg font-bold py-4 rounded-xl shadow-lg transition duration-200">
-                    Получить задание (+1 UAH)
+            <div id="step-start-container">
+                <button id="get-task-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-500/20 cursor-pointer">
+                    Получить задание
                 </button>
-                <p id="cooldown-text" class="text-xs text-gray-400 mt-3 h-4 text-center"></p>
             </div>
 
-            <!-- Шаг 2: Ожидание / Проверка выполнения (10 секунд) -->
-            <div id="step-verify-container" class="hidden w-full bg-gray-800 p-5 rounded-2xl text-center border border-gray-700">
-                <p class="text-sm font-semibold mb-2 text-yellow-400">Выполните действие в Telegram!</p>
-                <p class="text-xs text-gray-300 mb-4">Бот открыт. Нажмите в нем <b>«Запустить» / «Start»</b> и подождите окончания таймера.</p>
-                
-                <div id="verify-timer" class="text-3xl font-bold text-emerald-400 mb-4">10</div>
-                
+            <div id="step-verify-container" class="hidden space-y-3">
+                <div class="bg-gray-900 p-4 rounded-xl text-center space-y-2 border border-gray-700">
+                    <p class="text-sm text-gray-300">Перейдите по открывшейся ссылке и запустите бота.</p>
+                    <div class="text-2xl font-black text-emerald-400" id="verify-timer">10</div>
+                </div>
                 <button id="confirm-task-btn" disabled class="w-full bg-gray-700 text-gray-400 font-bold py-3 rounded-xl transition cursor-not-allowed">
                     Ожидание проверки...
                 </button>
             </div>
 
-            <!-- Блок окончания ссылок -->
-            <div id="no-links-container" class="hidden text-center w-full">
-                <p class="text-yellow-400 mb-4 text-sm">Все доступные ссылки на сегодня закончились!</p>
-                <button id="request-links-btn" class="w-full bg-blue-600 hover:bg-blue-700 font-semibold py-3 rounded-xl transition">
-                    Запросить еще ссылки
+            <div id="no-links-container" class="hidden space-y-3 text-center py-2">
+                <p class="text-sm text-amber-400 font-semibold">Все доступные ссылки на сегодня закончились!</p>
+                <button id="request-links-btn" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2.5 rounded-xl transition text-sm">
+                    Запросить новые ссылки у админа
                 </button>
             </div>
         </div>
-
-        <!-- Вкладка: Вывод средств -->
-        <div id="tab-withdraw" class="hidden flex flex-col flex-grow py-4">
-            <h3 class="text-xl font-bold mb-4">Вывод средств</h3>
-            <div class="mb-4">
-                <label class="block text-sm text-gray-400 mb-2">Сумма для вывода (UAH)</label>
-                <input type="number" id="withdraw-amount" placeholder="0.00" class="w-full px-4 py-3 bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            </div>
-
-            <!-- Выбор способа вывода -->
-            <div class="mb-4">
-                <label class="block text-sm text-gray-400 mb-2">Способ выплаты</label>
-                <div class="grid grid-cols-2 gap-3">
-                    <label class="flex items-center justify-center p-3 bg-gray-800 border border-emerald-500 rounded-lg cursor-pointer text-sm font-semibold">
-                        <input type="radio" name="withdraw-method" value="card" checked class="mr-2 accent-emerald-500"> На карту
-                    </label>
-                    <label class="flex items-center justify-center p-3 bg-gray-800 border border-gray-700 rounded-lg cursor-pointer text-sm font-semibold">
-                        <input type="radio" name="withdraw-method" value="cash" class="mr-2 accent-emerald-500"> Наличными
-                    </label>
-                </div>
-            </div>
-
-            <!-- Поле ввода карты (показывается если выбрана карта) -->
-            <div id="card-input-container" class="mb-4">
-                <label class="block text-sm text-gray-400 mb-2">Номер банковской карты</label>
-                <input type="text" id="withdraw-card" placeholder="0000 0000 0000 0000" class="w-full px-4 py-3 bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            </div>
-
-            <div class="mb-6 flex items-start space-x-3">
-                <input type="checkbox" id="terms-checkbox" class="mt-1 w-4 h-4 rounded text-emerald-500 focus:ring-emerald-400 bg-gray-800 border-gray-700">
-                <label for="terms-checkbox" class="text-xs text-gray-300">Согласен с условиями пользовательского соглашения, правилами платформы и регламентом выплат на карту или наличными.</label>
-            </div>
-            <button id="withdraw-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 font-bold py-3 rounded-xl transition">
-                Отправить заявку
-            </button>
-        </div>
-
-        <!-- Вкладка: Админ-панель -->
-        <div id="tab-admin" class="hidden flex flex-col flex-grow py-4 overflow-y-auto max-h-[60vh]">
-            <h3 class="text-xl font-bold mb-4 text-emerald-400">Панель администратора</h3>
-            
-            <div class="mb-6 bg-gray-800 p-4 rounded-xl">
-                <h4 class="font-semibold mb-2 text-sm">Добавить новую реферальную ссылку</h4>
-                <input type="text" id="new-link-input" placeholder="https://t.me/..." class="w-full px-3 py-2 bg-gray-700 rounded-lg text-sm mb-2 focus:outline-none">
-                <button id="add-link-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-sm font-semibold py-2 rounded-lg">Добавить в базу</button>
-            </div>
-
-            <div class="mb-4">
-                <h4 class="font-semibold mb-2 text-sm text-gray-300">Запросы ссылок от пользователей:</h4>
-                <div id="admin-link-requests" class="space-y-2 text-xs text-gray-400"></div>
-            </div>
-
-            <div>
-                <h4 class="font-semibold mb-2 text-sm text-gray-300">Запросы на вывод:</h4>
-                <div id="admin-withdrawals" class="space-y-2 text-xs text-gray-400"></div>
-            </div>
-        </div>
-
-        <!-- Подвал -->
-        <footer class="text-center text-xs text-gray-500 py-2">
-            Реферальная платформа &copy; 2026
-        </footer>
     </div>
 
-    <!-- Firebase SDK & скрипт -->
-    <script type="module" src="script.js"></script>
-</body>
-</html>
+    <!-- Секция 2: TikTok задания -->
+    <div id="subtab-tiktok" class="space-y-4 hidden">
+        <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between">
+                <span class="text-xs bg-purple-500/20 text-purple-400 px-2.5 py-1 rounded-full font-semibold">Награда: 10.00 UAH</span>
+                <span class="text-xs text-gray-400">TikTok Спам-комменты</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Написать 10 комментариев в TikTok</h3>
+            <p class="text-sm text-gray-300">
+                1. Вбейте в поиск TikTok: <code class="bg-gray-900 px-2 py-0.5 rounded text-emerald-400">бесплатные деньги</code><br>
+                2. Под 10 разными видео оставьте комментарий:<br>
+                <span class="block bg-gray-900 p-2.5 rounded-lg text-xs text-gray-200 mt-1 border border-gray-700 select-all">
+                    Бля тут реально халява, редко где такое найти https://koteycagames.github.io/LegalMoney/
+                </span>
+                3. Сделайте скриншоты и скиньте их в наш Telegram чат.
+            </p>
+            <a href="https://t.me/+DwTJR8edtTZmNzgy" target="_blank" class="block text-center text-xs text-emerald-400 underline font-semibold">
+                🔗 Открыть группу для отправки скриншотов
+            </a>
+            <button onclick="openTikTokModal()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-purple-600/20 cursor-pointer">
+                Взять задание TikTok
+            </button>
+        </div>
+    </div>
+
+    <!-- Секция 3: Баг-хантеры -->
+    <div id="subtab-bugs" class="space-y-4 hidden">
+        <div class="bg-gray-800 border border-gray-700 rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between">
+                <span class="text-xs bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full font-semibold">Награда: 5 – 10 UAH</span>
+                <span class="text-xs text-gray-400">Безопасность</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Сообщить об ошибке или баге</h3>
+            <p class="text-sm text-gray-300">Нашли баг? — <b class="text-white">5 UAH</b>. Нашли уязвимость безопасности? — <b class="text-white">10 UAH</b>.</p>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Тип находки:</label>
+                    <select id="bug-type" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 text-white text-sm outline-none focus:border-emerald-500">
+                        <option value="bug">Обычный баг (5 UAH)</option>
+                        <option value="security">Уязвимость безопасности (10 UAH)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Описание проблемы:</label>
+                    <textarea id="bug-desc" rows="3" placeholder="Подробно опишите, где баг и как его повторить..." class="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 text-white text-sm outline-none focus:border-emerald-500"></textarea>
+                </div>
+                <button id="send-bug-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition cursor-pointer">
+                    Отправить отчет админу
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка для ввода Telegram @username при выполнении TikTok задания -->
+<div id="tiktok-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+    <div class="bg-gray-800 border border-gray-700 rounded-2xl max-w-sm w-full p-6 space-y-4">
+        <h3 class="text-lg font-bold text-white" id="tiktok-modal-title">Введите ваш Telegram @username</h3>
+        <p class="text-xs text-gray-400">Чтобы администратор понял, от кого именно пришли скриншоты в группе, укажите ваш ник:</p>
+        <input type="text" id="tiktok-username-input" placeholder="@your_username" class="w-full bg-gray-900 border border-gray-700 rounded-xl p-3 text-white text-sm outline-none focus:border-purple-500">
+        <div class="flex space-x-2">
+            <button onclick="closeTikTokModal()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2.5 rounded-xl text-sm font-semibold">Отмена</button>
+            <button onclick="submitTikTokTask()" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-xl text-sm font-semibold">Готово, иду кидать скрины</button>
+        </div>
+    </div>
+</div>
