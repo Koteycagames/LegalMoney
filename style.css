@@ -16,7 +16,6 @@ body {
     padding: 16px;
 }
 
-/* Главный контейнер */
 .app-container {
     width: 100%;
     max-width: 440px;
@@ -27,7 +26,6 @@ body {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
 }
 
-/* Карточки */
 .card {
     background-color: #1f2937;
     border: 1px solid #374151;
@@ -37,7 +35,6 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Элементы форм */
 input, select, textarea {
     width: 100%;
     background-color: #0b0f19;
@@ -51,15 +48,12 @@ input, select, textarea {
 }
 
 input:focus, select:focus, textarea:focus {
-    border-color: #8b5cf6;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
 }
 
-textarea {
-    resize: vertical;
-}
+textarea { resize: vertical; }
 
-/* Кнопки */
 .btn {
     width: 100%;
     padding: 14px 16px;
@@ -72,9 +66,7 @@ textarea {
     text-align: center;
 }
 
-.btn:active {
-    transform: scale(0.98);
-}
+.btn:active { transform: scale(0.98); }
 
 .btn-emerald {
     background: linear-gradient(135deg, #10b981, #059669);
@@ -110,7 +102,7 @@ textarea {
     box-shadow: none !important;
 }
 
-/* Навигация (Главные вкладки) */
+/* Навигация (Главные вкладки и подвкладки) */
 .tabs-header {
     display: flex;
     background-color: #0b0f19;
@@ -118,6 +110,7 @@ textarea {
     border-radius: 16px;
     border: 1px solid #1f2937;
     margin-bottom: 20px;
+    gap: 4px;
 }
 
 .tab-btn {
@@ -140,7 +133,6 @@ textarea {
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
-/* Бейджи */
 .badge {
     display: inline-flex;
     align-items: center;
@@ -149,10 +141,10 @@ textarea {
     font-weight: 600;
     font-size: 12px;
 }
+.badge-emerald { background-color: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
 .badge-purple { background-color: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
 .badge-blue { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
 
-/* Модальные окна */
 .modal-backdrop {
     position: fixed;
     inset: 0;
@@ -163,7 +155,6 @@ textarea {
     justify-content: center;
     padding: 16px;
     z-index: 50;
-    animation: fadeIn 0.2s ease;
 }
 
 .modal-box {
@@ -174,20 +165,8 @@ textarea {
     width: 100%;
     padding: 24px;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
-    animation: scaleUp 0.2s ease;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes scaleUp {
-    from { transform: scale(0.95); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-
-/* Утилиты */
 .hidden { display: none !important; }
 .space-y > * + * { margin-top: 16px; }
 .space-y-sm > * + * { margin-top: 10px; }
