@@ -4,125 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LegalMoney — Зарабатывай легко</title>
-    <!-- Подключаем твой файл стилей -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <!-- Экран авторизации -->
     <div id="auth-screen" class="app-container">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <h1 id="auth-title" style="font-size: 22px; font-weight: bold; margin-bottom: 8px;">Вход в систему</h1>
+        <div style="text-align: center; margin-bottom: 24px;">
+            <h1 id="auth-title" style="font-size: 24px; font-weight: 800; margin-bottom: 6px; color: #fff;">Вход в систему</h1>
             <p style="font-size: 13px; color: #9ca3af;">Авторизуйтесь для доступа к заработку</p>
         </div>
         <div class="space-y">
             <div>
-                <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Email</label>
+                <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px;">Email</label>
                 <input type="email" id="email-input" placeholder="example@gmail.com">
             </div>
             <div>
-                <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Пароль</label>
+                <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px;">Пароль</label>
                 <input type="password" id="password-input" placeholder="••••••••">
             </div>
-            <button id="auth-btn" class="btn btn-emerald">Войти</button>
-            <button id="toggle-auth-mode" class="btn btn-gray" style="background: transparent; color: #10b981;">Нет аккаунта? Зарегистрироваться</button>
+            <button id="auth-btn" class="btn btn-emerald" style="margin-top: 8px;">Войти</button>
+            <button id="toggle-auth-mode" class="btn btn-gray" style="background: transparent; color: #a855f7;">Нет аккаунта? Зарегистрироваться</button>
         </div>
     </div>
 
     <!-- Основной экран приложения -->
     <div id="app-screen" class="app-container hidden">
-        <!-- Шапка -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #374151;">
+        <!-- Шапка профиля -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #1f2937;">
             <div>
                 <div style="font-size: 12px; color: #9ca3af;" id="user-email-display">user@gmail.com</div>
-                <div style="font-size: 20px; font-weight: 900; color: #10b981;" id="balance-display">0.00 UAH</div>
+                <div style="font-size: 22px; font-weight: 900; color: #10b981; margin-top: 2px;" id="balance-display">0.00 UAH</div>
             </div>
-            <button id="logout-btn" class="btn btn-gray" style="width: auto; padding: 8px 12px; font-size: 12px;">Выйти</button>
+            <button id="logout-btn" class="btn btn-gray" style="width: auto; padding: 8px 14px; font-size: 12px;">Выйти</button>
         </div>
 
         <!-- Навигация по главным вкладкам -->
         <div class="tabs-header">
-            <button onclick="switchTab('main')" id="tab-main-btn" class="tab-btn active-emerald">Задания</button>
+            <button onclick="switchTab('main')" id="tab-main-btn" class="tab-btn active">Задания</button>
             <button onclick="switchTab('withdraw')" id="tab-withdraw-btn" class="tab-btn">Вывод</button>
             <button onclick="switchTab('admin')" id="tab-admin-btn" class="tab-btn hidden">Админка</button>
         </div>
 
         <!-- Вкладка: Задания -->
         <div id="tab-main" class="space-y">
-            <!-- Подвкладки категорий заданий -->
-            <div style="display: flex; background-color: #111827; padding: 4px; border-radius: 12px; border: 1px solid #374151; font-size: 12px; font-weight: 600;">
-                <button onclick="switchTaskTab('bots')" id="subtab-bots-btn" class="tab-btn active-emerald" style="border-radius: 8px;">🤖 Боты и ТГ</button>
-                <button onclick="switchTaskTab('tiktok')" id="subtab-tiktok-btn" class="tab-btn" style="border-radius: 8px;">🎵 TikTok</button>
-                <button onclick="switchTaskTab('bugs')" id="subtab-bugs-btn" class="tab-btn" style="border-radius: 8px;">🛡️ Баг-хантер</button>
+            <!-- Подвкладки (только TikTok и Баг-хантер) -->
+            <div style="display: flex; background-color: #0b0f19; padding: 4px; border-radius: 14px; border: 1px solid #1f2937;">
+                <button onclick="switchTaskTab('tiktok')" id="subtab-tiktok-btn" class="tab-btn active">🎵 TikTok</button>
+                <button onclick="switchTaskTab('bugs')" id="subtab-bugs-btn" class="tab-btn">🛡️ Баг-хантер</button>
             </div>
 
-            <!-- Секция 1: Боты и ТГ -->
-            <div id="subtab-bots" class="card space-y">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <span class="badge badge-emerald">Награда: +1.00 UAH</span>
-                    <span style="font-size: 12px; color: #9ca3af;">Таймер: 10 сек</span>
-                </div>
-                <h3 style="font-size: 16px; font-weight: bold;">Переход по реферальной ссылке</h3>
-                <p style="font-size: 13px; color: #d1d5db;">Запустите бота по ссылке, выждите таймер и подтвердите выполнение.</p>
-                
-                <div id="step-start-container">
-                    <button id="get-task-btn" class="btn btn-emerald">Получить задание</button>
-                </div>
-
-                <div id="step-verify-container" class="hidden space-y">
-                    <div style="background-color: #111827; padding: 16px; border-radius: 12px; text-align: center; border: 1px solid #374151;">
-                        <p style="font-size: 13px; color: #d1d5db; margin-bottom: 8px;">Перейдите по открывшейся ссылке и запустите бота.</p>
-                        <div style="font-size: 24px; font-weight: 900; color: #10b981;" id="verify-timer">10</div>
-                    </div>
-                    <button id="confirm-task-btn" disabled class="btn btn-gray">Ожидание проверки...</button>
-                </div>
-
-                <div id="no-links-container" class="hidden space-y text-center" style="padding: 8px 0;">
-                    <p style="font-size: 13px; color: #fbbf24; font-weight: 600;">Все доступные ссылки на сегодня закончились!</p>
-                    <button id="request-links-btn" class="btn btn-gray">Запросить новые ссылки у админа</button>
-                </div>
-            </div>
-
-            <!-- Секция 2: TikTok задания -->
-            <div id="subtab-tiktok" class="card space-y hidden">
+            <!-- Секция: TikTok задания -->
+            <div id="subtab-tiktok" class="card space-y">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <span class="badge badge-purple">Награда: 10.00 UAH</span>
-                    <span style="font-size: 12px; color: #9ca3af;">TikTok Спам-комменты</span>
+                    <span style="font-size: 12px; color: #9ca3af;">Спам-комменты</span>
                 </div>
-                <h3 style="font-size: 16px; font-weight: bold;">Написать 10 комментариев в TikTok</h3>
-                <p style="font-size: 13px; color: #d1d5db; line-height: 1.5;">
-                    1. Вбейте в поиск TikTok: <code style="background: #111827; padding: 2px 6px; border-radius: 4px; color: #10b981;">бесплатные деньги</code><br>
+                <h3 style="font-size: 17px; font-weight: bold; color: #fff;">Написать 10 комментариев в TikTok</h3>
+                <p style="font-size: 13px; color: #d1d5db; line-height: 1.6;">
+                    1. Вбейте в поиск TikTok: <code style="background: #0b0f19; padding: 3px 8px; border-radius: 6px; color: #a855f7; border: 1px solid #374151;">бесплатные деньги</code><br>
                     2. Под 10 разными видео оставьте комментарий:<br>
-                    <span style="display: block; background: #111827; padding: 10px; border-radius: 8px; font-size: 11px; color: #e5e7eb; margin-top: 6px; border: 1px solid #374151; user-select: all;">
+                    <span style="display: block; background: #0b0f19; padding: 12px; border-radius: 10px; font-size: 12px; color: #e5e7eb; margin-top: 8px; border: 1px solid #374151; user-select: all;">
                         Бля тут реально халява, редко где такое найти https://koteycagames.github.io/LegalMoney/
                     </span>
                     3. Сделайте скриншоты и скиньте их в наш Telegram чат.
                 </p>
-                <a href="https://t.me/+DwTJR8edtTZmNzgy" target="_blank" style="display: block; text-align: center; font-size: 12px; color: #10b981; text-decoration: underline; font-weight: 600;">
+                <a href="https://t.me/+DwTJR8edtTZmNzgy" target="_blank" style="display: block; text-align: center; font-size: 13px; color: #a855f7; text-decoration: none; font-weight: 600; padding: 4px 0;">
                     🔗 Открыть группу для отправки скриншотов
                 </a>
                 <button onclick="openTikTokModal()" class="btn btn-purple">Взять задание TikTok</button>
             </div>
 
-            <!-- Секция 3: Баг-хантеры -->
+            <!-- Секция: Баг-хантеры -->
             <div id="subtab-bugs" class="card space-y hidden">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <span class="badge badge-blue">Награда: 5 – 10 UAH</span>
                     <span style="font-size: 12px; color: #9ca3af;">Безопасность</span>
                 </div>
-                <h3 style="font-size: 16px; font-weight: bold;">Сообщить об ошибке или баге</h3>
+                <h3 style="font-size: 17px; font-weight: bold; color: #fff;">Сообщить об ошибке или баге</h3>
                 <p style="font-size: 13px; color: #d1d5db;">Нашли баг? — <b style="color: #fff;">5 UAH</b>. Нашли уязвимость безопасности? — <b style="color: #fff;">10 UAH</b>.</p>
                 
                 <div class="space-y">
                     <div>
-                        <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Тип находки:</label>
+                        <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px;">Тип находки:</label>
                         <select id="bug-type">
                             <option value="bug">Обычный баг (5 UAH)</option>
                             <option value="security">Уязвимость безопасности (10 UAH)</option>
                         </select>
                     </div>
                     <div>
-                        <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Описание проблемы:</label>
+                        <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px;">Описание проблемы:</label>
                         <textarea id="bug-desc" rows="3" placeholder="Подробно опишите, где баг и как его повторить..."></textarea>
                     </div>
                     <button id="send-bug-btn" class="btn btn-blue">Отправить отчет админу</button>
@@ -132,30 +103,30 @@
 
         <!-- Вкладка: Вывод средств -->
         <div id="tab-withdraw" class="card space-y hidden">
-            <h3 style="font-size: 16px; font-weight: bold;">Вывод средств</h3>
+            <h3 style="font-size: 17px; font-weight: bold; color: #fff;">Вывод средств</h3>
             <div class="space-y">
                 <div>
-                    <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Сумма (UAH)</label>
+                    <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px;">Сумма (UAH)</label>
                     <input type="number" id="withdraw-amount" placeholder="0.00">
                 </div>
                 <div>
-                    <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Способ выплаты</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                        <label style="display: flex; align-items: center; justify-content: center; padding: 10px; background-color: #111827; border: 1px solid #10b981; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                    <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px;">Способ выплаты</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <label style="display: flex; align-items: center; justify-content: center; padding: 12px; background-color: #0b0f19; border: 1px solid #10b981; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #fff;">
                             <input type="radio" name="withdraw-method" value="card" checked style="display: none;"> На карту
                         </label>
-                        <label style="display: flex; align-items: center; justify-content: center; padding: 10px; background-color: #111827; border: 1px solid #374151; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                        <label style="display: flex; align-items: center; justify-content: center; padding: 12px; background-color: #0b0f19; border: 1px solid #374151; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600; color: #9ca3af;">
                             <input type="radio" name="withdraw-method" value="cash" style="display: none;"> Наличные
                         </label>
                     </div>
                 </div>
                 <div id="card-input-container">
-                    <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Номер карты</label>
+                    <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px;">Номер карты</label>
                     <input type="text" id="withdraw-card" placeholder="5375 0000 0000 0000">
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="terms-checkbox" style="width: auto;">
-                    <label for="terms-checkbox" style="font-size: 12px; color: #9ca3af;">Я согласен с условиями выплат</label>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="terms-checkbox" style="width: 18px; height: 18px; accent-color: #10b981;">
+                    <label for="terms-checkbox" style="font-size: 12px; color: #9ca3af; cursor: pointer;">Я согласен с условиями выплат</label>
                 </div>
                 <button id="withdraw-btn" class="btn btn-emerald">Заказать выплату</button>
             </div>
@@ -163,22 +134,11 @@
 
         <!-- Вкладка: Админка -->
         <div id="tab-admin" class="card space-y hidden">
-            <h3 style="font-size: 16px; font-weight: bold; color: #ef4444;">Панель администратора</h3>
+            <h3 style="font-size: 17px; font-weight: bold; color: #ef4444;">Панель администратора</h3>
             <div class="space-y">
                 <div>
-                    <label style="font-size: 12px; color: #9ca3af; display: block; margin-bottom: 4px;">Добавить ссылку на бота</label>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="new-link-input" placeholder="https://t.me/...">
-                        <button id="add-link-btn" class="btn btn-emerald" style="width: auto; padding: 0 16px;">Добавить</button>
-                    </div>
-                </div>
-                <div>
-                    <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Запросы на новые ссылки:</h4>
-                    <div id="admin-link-requests" class="space-y" style="max-height: 150px; overflow-y: auto;"></div>
-                </div>
-                <div>
-                    <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Заявки на вывод:</h4>
-                    <div id="admin-withdrawals" class="space-y" style="max-height: 200px; overflow-y: auto;"></div>
+                    <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px; color: #fff;">Заявки на вывод:</h4>
+                    <div id="admin-withdrawals" class="space-y-sm" style="max-height: 250px; overflow-y: auto;"></div>
                 </div>
             </div>
         </div>
@@ -187,12 +147,12 @@
     <!-- Модальное окно TikTok с вводом @username -->
     <div id="tiktok-modal" class="modal-backdrop hidden">
         <div class="modal-box space-y">
-            <h3 style="font-size: 18px; font-weight: bold;">Введите ваш Telegram @username</h3>
-            <p style="font-size: 12px; color: #9ca3af;">Чтобы администратор понял, от кого именно пришли скриншоты в группе, укажите ваш ник:</p>
+            <h3 style="font-size: 18px; font-weight: bold; color: #fff;">Введите ваш Telegram @username</h3>
+            <p style="font-size: 13px; color: #9ca3af; line-height: 1.4;">Чтобы администратор понял, от кого именно пришли скриншоты в группе, укажите ваш ник:</p>
             <input type="text" id="tiktok-username-input" placeholder="@your_username">
-            <div style="display: flex; gap: 8px;">
+            <div style="display: flex; gap: 10px; margin-top: 8px;">
                 <button onclick="closeTikTokModal()" class="btn btn-gray">Отмена</button>
-                <button onclick="submitTikTokTask()" class="btn btn-purple">Готово, иду кидать</button>
+                <button onclick="submitTikTokTask()" class="btn btn-purple">Готово</button>
             </div>
         </div>
     </div>
@@ -200,25 +160,24 @@
     <!-- Универсальная модалка -->
     <div id="custom-modal" class="modal-backdrop hidden">
         <div class="modal-box space-y text-center">
-            <h3 id="modal-title" style="font-size: 18px; font-weight: bold;">Уведомление</h3>
-            <p id="modal-message" style="font-size: 13px; color: #d1d5db;"></p>
-            <button id="modal-close-btn" class="btn btn-emerald">ОК</button>
+            <h3 id="modal-title" style="font-size: 18px; font-weight: bold; color: #fff;">Уведомление</h3>
+            <p id="modal-message" style="font-size: 13px; color: #d1d5db; line-height: 1.4;"></p>
+            <button id="modal-close-btn" class="btn btn-emerald" style="margin-top: 8px;">ОК</button>
         </div>
     </div>
 
-    <!-- Модальное окно приветствия 1 -->
+    <!-- Модальные окна приветствия -->
     <div id="welcome-modal-1" class="modal-backdrop hidden">
         <div class="modal-box space-y text-center">
-            <h3 style="font-size: 18px; font-weight: bold;">Добро пожаловать!</h3>
+            <h3 style="font-size: 18px; font-weight: bold; color: #fff;">Добро пожаловать!</h3>
             <p style="font-size: 13px; color: #d1d5db;">Ознакомьтесь с правилами честной работы нашего сервиса перед началом.</p>
             <button id="welcome-1-btn" class="btn btn-emerald" disabled>Подождите (5 сек)</button>
         </div>
     </div>
 
-    <!-- Модальное окно приветствия 2 -->
     <div id="welcome-modal-2" class="modal-backdrop hidden">
         <div class="modal-box space-y text-center">
-            <h3 style="font-size: 18px; font-weight: bold;">Важное правило</h3>
+            <h3 style="font-size: 18px; font-weight: bold; color: #fff;">Важное правило</h3>
             <p style="font-size: 13px; color: #d1d5db;">Запрещено создавать мультиаккаунты и накручивать задания ботами. Нарушители банятся без выплат.</p>
             <button id="welcome-2-btn" class="btn btn-emerald" disabled>Ознакомьтесь с правилами (40 сек)</button>
         </div>
@@ -226,12 +185,11 @@
 
     <!-- Экран загрузки -->
     <div id="loading-screen" class="modal-backdrop hidden">
-        <div class="modal-box text-center">
+        <div class="modal-box text-center" style="max-width: 260px;">
             <p style="font-size: 15px; font-weight: bold; color: #10b981;">Загрузка профиля...</p>
         </div>
     </div>
 
-    <!-- Подключаем логику скрипта -->
     <script type="module" src="script.js"></script>
 </body>
 </html>
