@@ -182,7 +182,7 @@ function checkUserRejections(uid) {
             snapshot.forEach((childSnap) => {
                 const req = childSnap.val();
                 if (req.uid === uid && req.status === 'rejected' && !req.notified) {
-                    showModal('Ваша заявка на вывод была отклонена администратором. Причина: обнаружено нарушение правил (старт в ботах не был зафиксирован или зафиксирована накрутка).', 'Заявка отклонена');
+                    showModal('Ваша заявка на вывод была отклонена администратором. Причина: обнаружено нарушение правил.', 'Заявка отклонена');
                     update(ref(db, `withdrawals/${childSnap.key}`), { notified: true });
                 }
             });
@@ -198,6 +198,7 @@ function listenUserBalance(uid) {
     });
 }
 
+// Переключение основных вкладок сайта
 window.switchTab = function(tabName) {
     ['main', 'withdraw', 'admin'].forEach(t => {
         document.getElementById(`tab-${t}`).classList.add('hidden');
@@ -208,6 +209,77 @@ window.switchTab = function(tabName) {
     document.getElementById(`tab-${tabName}-btn`).classList.add('border-emerald-500', 'font-semibold');
     document.getElementById(`tab-${tabName}-btn`).classList.remove('border-transparent', 'text-gray-400');
 }
+
+// Переключение подвкладок заданий на главной
+window.switchTaskTab = function(subTab) {
+    ['bots', 'tiktok', 'bugs'].forEach(t => {
+        document.getElementById(`subtab-${t}`).classList.add('hidden');
+        document.getElementById(`subtab-${t}-btn`).className = "flex-1 py-2 rounded-lg text-gray-400 hover:text-white transition text-center";
+    });
+    document.getElementById(`subtab-${subTab}`).classList.remove('hidden');
+    
+    let activeColor = "bg-emerald-600 text-white";
+    if (subTab === 'tiktok') activeColor = "bg-purple-600 text-white";
+    if (subTab === 'bugs') activeColor = "bg-blue-600 text-white";
+
+    document.getElementById(`subtab-${subTab}-btn`).className = `flex-1 py-2 rounded-lg ${activeColor} transition text-center`;
+}
+
+// Логика модалки TikTok
+window.openTikTokModal = function() {
+    document.getElementById('tiktok-modal').classList.remove('hidden');
+}
+
+window.closeTikTokModal = function() {
+    document.getElementById('tiktok-modal').classList.add('hidden');
+}
+
+window.submitTikTokTask = async function() {
+    const tgUsername = document.getElementById('tiktok-username-input').value.trim();
+    if (!tgUsername) {
+        showModal('Введите ваш Telegram @username!', 'Ошибка');
+        return;
+    }
+
+    await push(ref(db, 'tiktok_submissions'), {
+        email: currentUser.email,
+        uid: currentUser.uid,
+        tgUsername: tgUsername,
+        timestamp: Date.now(),
+        status: 'pending'
+    });
+
+    closeTikTokModal();
+    document.getElementById('tiktok-username-input').value = '';
+    showModal('Задание принято! Теперь отправьте скриншоты в наш Telegram чат, и админ начислит вам 10 UAH после проверки.', 'Успешно');
+}
+
+// Логика отправки багов
+document.getElementById('send-bug-btn').addEventListener('click', async () => {
+    if (!currentUser) return;
+    const bugType = document.getElementById('bug-type').value;
+    const description = document.getElementById('bug-desc').value.trim();
+
+    if (!description) {
+        showModal('Опишите найденный баг или уязвимость!', 'Ошибка');
+        return;
+    }
+
+    const reward = bugType === 'security' ? 10.00 : 5.00;
+
+    await push(ref(db, 'bug_reports'), {
+        email: currentUser.email,
+        uid: currentUser.uid,
+        type: bugType,
+        reward: reward,
+        description: description,
+        timestamp: Date.now(),
+        status: 'pending'
+    });
+
+    document.getElementById('bug-desc').value = '';
+    showModal(`Отчет отправлен! Если админ подтвердит, вам на баланс капнет ${reward} UAH.`, 'Спасибо!');
+});
 
 document.querySelectorAll('input[name="withdraw-method"]').forEach((elem) => {
     elem.addEventListener('change', (e) => {
@@ -267,10 +339,8 @@ getTaskBtn.addEventListener('click', async () => {
         return;
     }
 
-    // Выбираем случайную ссылку
     currentSelectedLink = availableLinks[Math.floor(Math.random() * availableLinks.length)];
 
-    // СРАЗУ записываем ее в localStorage как посещенную, чтобы она больше никогда не выпала
     visitedLinks.push(currentSelectedLink);
     localStorage.setItem(visitedKey, JSON.stringify(visitedLinks));
 
@@ -401,11 +471,11 @@ function loadAdminData() {
             const date = new Date(req.timestamp).toLocaleString();
             
             const div = document.createElement('div');
-            div.className = "bg-gray-700 p-2 rounded flex justify-between items-center";
+            div.className = "bg-gray-700 p-2 rounded flex justify-between items-center text-xs";
             div.innerHTML = `<span>${req.email} (${date})</span>`;
             
             const deleteBtn = document.createElement('button');
-            deleteBtn.className = "bg-red-500/20 text-red-400 px-2 py-1 rounded hover:bg-red-500/30 text-xs";
+            deleteBtn.className = "bg-red-500/20 text-red-400 px-2 py-1 rounded hover:bg-red-500/30";
             deleteBtn.innerText = "Удалить";
             deleteBtn.onclick = async () => {
                 await remove(ref(db, `link_requests/${key}`));
@@ -429,7 +499,7 @@ function loadAdminData() {
             const date = new Date(req.timestamp).toLocaleString();
             
             const div = document.createElement('div');
-            div.className = "bg-gray-700 p-3 rounded space-y-2";
+            div.className = "bg-gray-700 p-3 rounded space-y-2 text-xs";
             
             let statusBadge = '';
             if (req.status === 'pending') statusBadge = '<span class="text-yellow-400">[Ожидает]</span>';
@@ -446,15 +516,15 @@ function loadAdminData() {
                 btnContainer.className = "flex space-x-2 mt-1";
 
                 const approveBtn = document.createElement('button');
-                approveBtn.className = "flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-1 rounded text-xs font-semibold";
+                approveBtn.className = "flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-1 rounded font-semibold";
                 approveBtn.innerText = "Одобрить";
                 approveBtn.onclick = async () => {
                     await update(ref(db, `withdrawals/${key}`), { status: 'approved' });
                 };
 
                 const rejectBtn = document.createElement('button');
-                rejectBtn.className = "flex-1 bg-red-600 hover:bg-red-700 text-white py-1 rounded text-xs font-semibold";
-                rejectBtn.innerText = "Отклонить (Не тапал)";
+                rejectBtn.className = "flex-1 bg-red-600 hover:bg-red-700 text-white py-1 rounded font-semibold";
+                rejectBtn.innerText = "Отклонить";
                 rejectBtn.onclick = async () => {
                     const userBalRef = ref(db, `users/${req.uid}/balance`);
                     const balSnap = await get(userBalRef);
@@ -469,7 +539,7 @@ function loadAdminData() {
                 div.appendChild(btnContainer);
             } else {
                 const removeBtn = document.createElement('button');
-                removeBtn.className = "w-full bg-gray-600 hover:bg-gray-500 text-white py-1 rounded text-xs mt-1";
+                removeBtn.className = "w-full bg-gray-600 hover:bg-gray-500 text-white py-1 rounded mt-1";
                 removeBtn.innerText = "Удалить из истории";
                 removeBtn.onclick = async () => {
                     await remove(ref(db, `withdrawals/${key}`));
